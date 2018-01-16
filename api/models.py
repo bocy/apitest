@@ -18,3 +18,13 @@ class TestCase(models.Model):
     def __str__(self):
         return self.name
 
+class TestRun(models.Model):
+    caseid = models.IntegerField()
+    casename = models.CharField(max_length=150)
+    runtime = models.DateTimeField(auto_now_add=True)
+    testresult = models.TextField()
+    response = models.TextField()
+
+    def __str__(self):
+        return self.casename
+

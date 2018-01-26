@@ -28,3 +28,12 @@ class TestRun(models.Model):
     def __str__(self):
         return self.casename
 
+
+class TestServer(models.Model):
+    name = models.CharField(max_length=150)
+    ip = models.GenericIPAddressField()
+    port = models.IntegerField()
+
+    def __str__(self):
+        return self.name
+

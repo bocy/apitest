@@ -30,5 +30,6 @@ urlpatterns = [
     url('testcase/(?P<pk>[0-9]+)/$', views.CaseDetail.as_view()),
     url('testserver/(?P<pk>[0-9]+)/$', views.ServerDetail.as_view()),
     url('serverlist/', views.ServerList.as_view()),
+    url('runtest/', views.TestRun.as_view()),
     url('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]

@@ -12,4 +12,4 @@ class ApiSerializer(serializers.ModelSerializer):
 class TestServerSerializer(serializers.ModelSerializer):
     class Meta:
         model = TestServer
-        fields = ('name', 'ip', 'port')
+        fields = ('id', 'name', 'ip', 'port')

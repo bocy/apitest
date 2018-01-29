@@ -9,7 +9,10 @@ from rest_framework import status
 from rest_framework.response import Response
 from django.http import Http404
 from api.models import TestServer
+from api.models import TestRun
 from api.serializers import TestServerSerializer
+from .testrun import run_test
+import datetime
 
 
 # Create your views here.
@@ -61,17 +64,16 @@ class CaseDetail(APIView):
 
 
 class TestRun(APIView):
-    def get_object(self, pk):
-        try:
-            return TestCase.objects.get(pk=pk)
-        except TestCase.DoesNotExist:
-            raise Http404
-
-    def post(self, pk, request):
-        testcase = self.get_object(pk)
-        url = self.request.data('uri')
-        resp = request(testcase.method, )
-
+    def post(self, request, format=None):
+        server = TestServer.objects.get(request.data['serverId'])
+        host = 'http://' + server.ip + server.port
+        testcase = TestCase.objects.get(pk=request.data['caseId'])
+        url = host + testcase.uri
+        test_result, response_data = run_test(testcase.method, url, testcase.params, testcase.expect)
+        testrun = TestRun(casename=testcase.name, runtime=datetime.datetime.now(), request=testcase.params,
+                          testresult=test_result, response=response_data)
+        testrun.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class ServerDetail(APIView):
     def get_object(self, pk):

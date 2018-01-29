@@ -23,6 +23,7 @@ class TestRun(models.Model):
     casename = models.CharField(max_length=150)
     runtime = models.DateTimeField(auto_now_add=True)
     testresult = models.TextField()
+    request = models.TextField()
     response = models.TextField()
 
     def __str__(self):

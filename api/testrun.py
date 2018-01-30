@@ -1,5 +1,8 @@
 from requests import request
 import json
+import logging
+
+logger = logging.getLogger("apitest")
 
 
 def run_test(method, url, params, expect):
@@ -12,15 +15,15 @@ def run_test(method, url, params, expect):
         params_data = params
 
     resp = request(method, url, params=params_data, data=post_data)
-
+    logger.info(resp.status_code)
     if resp.status_code != 200:
         test_result = False
-        response_data = ""
+        response_data = resp.text
         return test_result, response_data
 
     resp_dic = resp.json()
     for expect_key, expect_value in json.loads(expect).items():
-        if resp_dic.get(expect_key) > 0:
+        if resp_dic.get(expect_key) is not None:
             if resp_dic[expect_key] == expect_value:
                 test_result = True
             else:

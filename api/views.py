@@ -11,8 +11,12 @@ from django.http import Http404
 from api.models import TestServer
 from api.models import TestRun
 from api.serializers import TestServerSerializer
+from api.serializers import TestRunSerializer
 from .testrun import run_test
-import datetime
+import time
+import logging
+
+logger = logging.getLogger('apitest')
 
 
 # Create your views here.
@@ -63,17 +67,27 @@ class CaseDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class TestRun(APIView):
+class RunTest(APIView):
     def post(self, request, format=None):
-        server = TestServer.objects.get(request.data['serverId'])
-        host = 'http://' + server.ip + server.port
+        server = TestServer.objects.get(pk=request.data['serverId'])
+        host = 'http://' + server.ip + ":" + str(server.port)
         testcase = TestCase.objects.get(pk=request.data['caseId'])
         url = host + testcase.uri
+        #logger.info(url)
         test_result, response_data = run_test(testcase.method, url, testcase.params, testcase.expect)
-        testrun = TestRun(casename=testcase.name, runtime=datetime.datetime.now(), request=testcase.params,
+        testrun = TestRun(caseid=testcase.id, casename=testcase.name,
+                          runtime=time.strftime("%Y-%m-%d %H:%M:%S.%j", time.localtime()), request=testcase.params,
                           testresult=test_result, response=response_data)
         testrun.save()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        serializer = TestRunSerializer(testrun)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def get(self, request, format=None):
+        testrun = TestRun.objects.all()
+        serializer = TestRunSerializer(testrun, many='True')
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 
 class ServerDetail(APIView):
     def get_object(self, pk):

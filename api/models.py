@@ -21,7 +21,7 @@ class TestCase(models.Model):
 class TestRun(models.Model):
     caseid = models.IntegerField()
     casename = models.CharField(max_length=150)
-    runtime = models.DateTimeField(auto_now_add=True)
+    runtime = models.CharField(max_length=150)
     testresult = models.TextField()
     request = models.TextField()
     response = models.TextField()

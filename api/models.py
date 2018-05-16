@@ -32,7 +32,7 @@ class TestRun(models.Model):
 
 class TestServer(models.Model):
     name = models.CharField(max_length=150)
-    ip = models.GenericIPAddressField()
+    ip = models.CharField(max_length=100)
     port = models.IntegerField()
 
     def __str__(self):

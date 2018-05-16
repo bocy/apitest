@@ -109,7 +109,7 @@ class ServerDetail(APIView):
         serializer = TestServerSerializer(testserver)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def delete(self, pk):
+    def delete(self, request, pk, format=None):
         testserver = self.get_object(pk)
         testserver.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

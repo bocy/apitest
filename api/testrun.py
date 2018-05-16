@@ -17,7 +17,7 @@ def run_test(method, url, params, expect):
     resp = request(method, url, params=params_data, data=post_data)
     logger.info(resp.status_code)
     if resp.status_code != 200:
-        test_result = False
+        test_result = "Fail"
         response_data = resp.text
         return test_result, response_data
 
@@ -25,11 +25,11 @@ def run_test(method, url, params, expect):
     for expect_key, expect_value in json.loads(expect).items():
         if resp_dic.get(expect_key) is not None:
             if resp_dic[expect_key] == expect_value:
-                test_result = True
+                test_result = "Pass"
             else:
-                test_result = False
+                test_result = "Fail"
         else:
-            test_result = False
+            test_result = "Fail"
     return test_result, resp.text
 
 

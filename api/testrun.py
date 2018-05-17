@@ -21,15 +21,19 @@ def run_test(method, url, params, expect):
         response_data = resp.text
         return test_result, response_data
 
-    resp_dic = resp.json()
-    for expect_key, expect_value in json.loads(expect).items():
-        if resp_dic.get(expect_key) is not None:
-            if resp_dic[expect_key] == expect_value:
-                test_result = "Pass"
-            else:
-                test_result = "Fail"
-        else:
-            test_result = "Fail"
+    if resp.text.count(expect) > 0:
+        test_result = "Pass"
+    else:
+        test_result = "Fail"
+    # resp_dic = resp.json()
+    # for expect_key, expect_value in json.loads(expect).items():
+    #     if resp_dic.get(expect_key) is not None:
+    #         if resp_dic[expect_key] == expect_value:
+    #             test_result = "Pass"
+    #         else:
+    #             test_result = "Fail"
+    #     else:
+    #         test_result = "Fail"
     return test_result, resp.text
 
 

@@ -69,24 +69,26 @@ class CaseDetail(APIView):
 
 class RunTest(APIView):
     def post(self, request, format=None):
+        testruns = []
         server = TestServer.objects.get(pk=request.data['serverId'])
         host = 'http://' + server.ip + ":" + str(server.port)
-        testcase = TestCase.objects.get(pk=request.data['caseId'])
-        url = host + testcase.uri
-        #logger.info(url)
-        test_result, response_data = run_test(testcase.method, url, testcase.params, testcase.expect)
-        testrun = TestRun(caseid=testcase.id, casename=testcase.name,
-                          runtime=time.strftime("%Y-%m-%d %H:%M:%S.%j", time.localtime()), request=testcase.params,
-                          testresult=test_result, response=response_data)
-        testrun.save()
-        serializer = TestRunSerializer(testrun)
+        for id in request.data['caseIds']:
+            testcase = TestCase.objects.get(pk=id)
+            url = host + testcase.uri
+            # logger.info(url)
+            test_result, response_data = run_test(testcase.method, url, testcase.params, testcase.expect)
+            testrun = TestRun(caseid=testcase.id, casename=testcase.name,
+                              runtime=time.strftime("%Y-%m-%d %H:%M:%S.%j", time.localtime()), request=testcase.params,
+                              testresult=test_result, response=response_data)
+            testrun.save()
+            testruns.append(testrun)
+        serializer = TestRunSerializer(testruns, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def get(self, request, format=None):
-        testrun = TestRun.objects.all()
+        testrun = TestRun.objects.all().order_by('-id')
         serializer = TestRunSerializer(testrun, many='True')
         return Response(serializer.data, status=status.HTTP_200_OK)
-
 
 
 class ServerDetail(APIView):
@@ -128,3 +130,4 @@ class ServerList(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+

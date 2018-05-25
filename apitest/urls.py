@@ -26,11 +26,11 @@ from api import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     # url('^', include(router.urls)),
-    url('caselist/', views.CaseList.as_view()),
+    url('caselist', views.CaseList.as_view()),
     url('testcase/(?P<pk>[0-9]+)/$', views.CaseDetail.as_view()),
     url('testserver/(?P<pk>[0-9]+)/$', views.ServerDetail.as_view()),
-    url('serverlist/', views.ServerList.as_view()),
-    url('runtest/', views.RunTest.as_view()),
-    url('runresult/', views.RunTest.as_view()),
+    url('serverlist', views.ServerList.as_view()),
+    url('runtest', views.RunTest.as_view()),
+    url('runresult', views.RunTest.as_view()),
     url('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]

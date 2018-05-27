@@ -10,8 +10,10 @@ from rest_framework.response import Response
 from django.http import Http404
 from api.models import TestServer
 from api.models import TestRun
+from api.models import TestSuite
 from api.serializers import TestServerSerializer
 from api.serializers import TestRunSerializer
+from api.serializers import TestSuiteSerializer
 from .testrun import run_test
 import time
 import logging
@@ -130,4 +132,24 @@ class ServerList(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class TestSuiteList(APIView):
+    def get(self, request, format=None):
+        testsuite = TestSuite.objects.all()
+        serializer = TestSuiteSerializer(testsuite, many='True')
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, format=None):
+        # data = JSONParser().parse(request)
+        serializer = TestSuiteSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class TestModuleList(APIView):
+    def get(self, request, format=None):
+        testmodulelist = TestCase.objects.all()
 

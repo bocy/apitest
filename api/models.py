@@ -5,6 +5,7 @@ from django.db import models
 
 class TestCase(models.Model):
     name = models.CharField(max_length=150)
+    project = models.CharField(max_length=150)
     module = models.CharField(max_length=150)
     method = models.CharField(max_length=50)
     uri = models.CharField(max_length=100)
@@ -38,3 +39,12 @@ class TestServer(models.Model):
     def __str__(self):
         return self.name
 
+
+class TestSuite(models.Model):
+    suitename = models.CharField(max_length=150)
+    project = models.CharField(max_length=150)
+    testresult = models.CharField(max_length=50)
+    passnumber = models.IntegerField()
+    failnumber = models.IntegerField()
+    successrate = models.FloatField()
+    runtime = models.DateTimeField()

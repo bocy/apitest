@@ -1,3 +1,8 @@
 
 *.pyc
 *.py___jb_tmp___
+apitest/urls.py
+*.xml
+*.xml
+*.pyc
+*.pyc

@@ -19,6 +19,7 @@ from django.conf.urls import url, include
 from rest_framework import routers
 # from api.views import CaseViewSet
 from api import views
+from django.views.generic import TemplateView
 
 # router = routers.DefaultRouter()
 # router.register(r'testcase', CaseViewSet)
@@ -26,6 +27,7 @@ from api import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     # url('^', include(router.urls)),
+    url('^$', TemplateView.as_view(template_name="index.html"), name="index"),
     url('caselist', views.CaseList.as_view()),
     url('testcase/(?P<pk>[0-9]+)/$', views.CaseDetail.as_view()),
     url('testserver/(?P<pk>[0-9]+)/$', views.ServerDetail.as_view()),

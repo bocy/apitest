@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from api.models import TestCase
-from api.serializers import ApiSerializer
+from api.serializers import TestCaseSerializer
 from rest_framework.views import APIView
 from django.http import HttpResponse, JsonResponse
 from rest_framework.parsers import JSONParser
@@ -17,6 +17,7 @@ from api.serializers import TestSuiteSerializer
 from .testrun import run_test
 import time
 import logging
+from django.core.paginator import Paginator
 
 logger = logging.getLogger('apitest')
 
@@ -30,12 +31,22 @@ logger = logging.getLogger('apitest')
 class CaseList(APIView):
     def get(self, request, format=None):
         testcase = TestCase.objects.all()
-        serializer = ApiSerializer(testcase, many='True')
-        return Response(serializer.data)
+        page_size = request.query_params.get('size')
+        offset = request.query_params.get('offset')
+        paginator = Paginator(testcase, page_size)
+        _total = len(testcase)
+        data = paginator.page(offset).object_list
+        serializer = TestCaseSerializer(data, many='True')
+        resp_dict = {
+            'total': _total,
+            'data': serializer.data
+        }
+        # serializer = ApiSerializer(data, many='True')
+        return Response(resp_dict)
 
     def post(self, request, format=None):
         # data = JSONParser().parse(request)
-        serializer = ApiSerializer(data=request.data)
+        serializer = TestCaseSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -51,13 +62,13 @@ class CaseDetail(APIView):
 
     def get(self, request, pk, format=None):
         testcase = self.get_object(pk)
-        serializer = ApiSerializer(testcase)
+        serializer = TestCaseSerializer(testcase)
         return Response(serializer.data)
 
     def put(self, request, pk, format=None):
         testcase = self.get_object(pk)
         # data = JSONParser().parse(testcase)
-        serializer = ApiSerializer(testcase, data=request.data)
+        serializer = TestCaseSerializer(testcase, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -78,7 +89,7 @@ class RunTest(APIView):
             testcase = TestCase.objects.get(pk=id)
             url = host + testcase.uri
             # logger.info(url)
-            test_result, response_data = run_test(testcase.method, url, testcase.params, testcase.expect)
+            test_result, response_data = run_test(testcase.method, url, testcase.params, testcase.expect, testcase.headers)
             testrun = TestRun(caseid=testcase.id, casename=testcase.name,
                               runtime=time.strftime("%Y-%m-%d %H:%M:%S.%j", time.localtime()), request=testcase.params,
                               testresult=test_result, response=response_data)
@@ -89,8 +100,18 @@ class RunTest(APIView):
 
     def get(self, request, format=None):
         testrun = TestRun.objects.all().order_by('-id')
-        serializer = TestRunSerializer(testrun, many='True')
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        page_size = request.query_params.get('size')
+        offset = request.query_params.get('offset')
+        paginator = Paginator(testrun, page_size)
+        _total = len(testrun)
+        data = paginator.page(offset).object_list
+        serializer = TestRunSerializer(data, many='True')
+        resp_dict = {
+            'total': _total,
+            'data': serializer.data
+        }
+        # serializer = TestRunSerializer(testrun, many='True')
+        return Response(resp_dict, status=status.HTTP_200_OK)
 
 
 class ServerDetail(APIView):

@@ -5,10 +5,14 @@ from api.models import TestSuite
 from rest_framework import serializers
 
 
-class ApiSerializer(serializers.ModelSerializer):
+class TestCaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = TestCase
+<<<<<<< HEAD
+        fields = ('id', 'name', 'project', 'module', 'method', 'uri', 'params', 'expect', 'create', 'data_format', 'headers')
+=======
         fields = ('id', 'name','project', 'module', 'method', 'uri', 'params', 'expect', 'create')
+>>>>>>> 645ae1909944e926131d9a18a5d7ed55fbfed757
 
 
 class TestServerSerializer(serializers.ModelSerializer):

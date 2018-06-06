@@ -5,7 +5,7 @@ import logging
 logger = logging.getLogger("apitest")
 
 
-def run_test(method, url, params, expect):
+def run_test(method, url, params, expect, headers):
     test_result = False
     params_data = None
     post_data = None
@@ -13,8 +13,13 @@ def run_test(method, url, params, expect):
         post_data = params
     elif method.upper() == "GET":
         params_data = params
+    # 处理header数据
+    headers = json.loads(headers)
+    header_data = {}
+    for h in headers:
+        header_data[h.name] = header_data[h.value]
 
-    resp = request(method, url, params=params_data, data=post_data)
+    resp = request(method, url, params=params_data, data=post_data, headers=header_data)
     logger.info(resp.status_code)
     if resp.status_code != 200:
         test_result = "Fail"

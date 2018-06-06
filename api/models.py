@@ -10,14 +10,17 @@ class TestCase(models.Model):
     method = models.CharField(max_length=50)
     uri = models.CharField(max_length=100)
     params = models.TextField()
+    data_format = models.CharField(max_length=100)
     expect = models.TextField()
     create = models.DateTimeField(auto_now_add=True)
     update = models.DateTimeField(auto_now=True)
+    headers = models.TextField()
 
     # objects = self.
 
     def __str__(self):
         return self.name
+
 
 class TestRun(models.Model):
     caseid = models.IntegerField()

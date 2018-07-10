@@ -5,19 +5,21 @@ import logging
 logger = logging.getLogger("apitest")
 
 
-def run_test(method, url, params, expect, headers):
-    test_result = False
+def run_test(method, url, data_format, params, expect, headers):
     params_data = None
     post_data = None
+
+    # 解析参数数据
+    if data_format == 'form':
+        params = parse_data(params)
+
     if method.upper() == "POST":
         post_data = params
     elif method.upper() == "GET":
         params_data = params
-    # 处理header数据
-    headers = json.loads(headers)
-    header_data = {}
-    for h in headers:
-        header_data[h.name] = header_data[h.value]
+
+    # 解析header数据
+    header_data = parse_data(headers)
 
     resp = request(method, url, params=params_data, data=post_data, headers=header_data)
     logger.info(resp.status_code)
@@ -41,4 +43,12 @@ def run_test(method, url, params, expect, headers):
     #         test_result = "Fail"
     return test_result, resp.text
 
+
+def parse_data(strs):
+    data = json.loads(strs)
+    dict_data = {}
+    if data is not None:
+        for h in data:
+            dict_data[h.get('name')] = h.get('value')
+    return dict_data
 

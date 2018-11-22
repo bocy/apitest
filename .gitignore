@@ -6,3 +6,7 @@ apitest/urls.py
 *.xml
 *.pyc
 *.pyc
+.idea/apitest.iml
+.idea/apitest.iml
+.idea/misc.xml
+.idea/workspace.xml
